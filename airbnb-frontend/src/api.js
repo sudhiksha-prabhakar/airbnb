@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://airbnb-5-ilrm.onrender.com';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Create axios instance
 const api = axios.create({
@@ -38,6 +38,7 @@ export const propertyAPI = {
 export const bookingAPI = {
   createBooking: (data) => api.post('/bookings', data),
   getUserBookings: () => api.get('/bookings/my'),
+  getHostBookings: () => api.get('/bookings/host'),
   cancelBooking: (id) => api.put(`/bookings/${id}/cancel`),
 };
 
