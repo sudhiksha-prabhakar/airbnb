@@ -85,29 +85,29 @@ const PropertyDetails = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-2">{property.title}</h1>
-      <p className="text-gray-600 text-xl mb-4">{property.location}</p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 text-gray-900">{property.title}</h1>
+      <p className="text-gray-600 text-sm sm:text-base md:text-xl mb-4">📍 {property.location}</p>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
         {/* Image and Description */}
         <div className="lg:col-span-2">
           <img 
             src={property.images?.[0] || "https://via.placeholder.com/800x500"} 
             alt={property.title} 
-            className="w-full rounded-lg h-96 object-cover"
+            className="w-full rounded-2xl h-60 sm:h-80 md:h-96 object-cover shadow-sm"
           />
           
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">About this place</h3>
-            <p className="leading-relaxed text-gray-700">{property.description}</p>
+          <div className="mt-6 sm:mt-8">
+            <h3 className="text-xl sm:text-2xl font-semibold mb-3">About this place</h3>
+            <p className="leading-relaxed text-gray-700 text-sm sm:text-base">{property.description}</p>
           </div>
         </div>
 
         {/* Booking Card */}
         <div className="h-fit">
-          <div className="border border-gray-300 rounded-lg p-6 shadow-lg">
-            <h3 className="text-2xl font-bold mb-4">₹{property.price} <span className="text-sm font-normal text-gray-600">/ night</span></h3>
+          <div className="border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-lg bg-white">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4 text-gray-900">₹{property.price} <span className="text-xs sm:text-sm font-normal text-gray-500">/ night</span></h3>
             
             {bookingSuccess && (
               <div className="bg-green-100 text-green-700 p-3 rounded mb-4">

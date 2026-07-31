@@ -50,83 +50,83 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="flex-1 mx-6 relative">
-      <form onSubmit={handleSearch} className="flex gap-2 items-center">
+    <div className="w-full relative">
+      <form onSubmit={handleSearch} className="flex gap-1.5 sm:gap-2 items-center">
         <input
           type="text"
-          placeholder="Search location or property..."
+          placeholder="Search location..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-4 py-2 rounded-full bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+          className="flex-1 min-w-0 px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-300 shadow-inner"
         />
         
         <button
           type="button"
           onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 bg-white text-red-500 rounded-full font-semibold hover:bg-gray-100"
+          className="px-3 sm:px-4 py-2 bg-white text-red-500 rounded-full font-semibold text-xs sm:text-sm hover:bg-gray-100 transition whitespace-nowrap shadow-sm"
         >
-          🔽 Filter
+          🎛️ <span className="hidden sm:inline">Filter</span>
         </button>
 
         <button
           type="submit"
-          className="px-6 py-2 bg-white text-red-500 rounded-full font-semibold hover:bg-gray-100"
+          className="px-4 sm:px-6 py-2 bg-red-600 sm:bg-white text-white sm:text-red-500 rounded-full font-semibold text-xs sm:text-sm hover:opacity-90 transition whitespace-nowrap shadow-sm"
         >
           Search
         </button>
       </form>
 
-      {/* Filter Dropdown */}
+      {/* Filter Dropdown Modal */}
       {showFilters && (
-        <div className="absolute top-16 left-0 right-0 bg-white shadow-lg p-6 grid grid-cols-1 md:grid-cols-4 gap-4 z-40 rounded-lg">
+        <div className="absolute top-12 sm:top-14 left-0 right-0 bg-white shadow-xl p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 z-50 rounded-2xl border border-gray-200">
           <div>
-            <label className="block text-sm font-semibold mb-2">Min Price (₹)</label>
+            <label className="block text-xs sm:text-sm font-semibold mb-1 text-gray-700">Min Price (₹)</label>
             <input
               type="number"
-              min ="0"
+              min="0"
               placeholder="Min price"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2">Max Price (₹)</label>
+            <label className="block text-xs sm:text-sm font-semibold mb-1 text-gray-700">Max Price (₹)</label>
             <input
               type="number"
-              min ="0"
+              min="0"
               placeholder="Max price"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2">Min Guests</label>
+            <label className="block text-xs sm:text-sm font-semibold mb-1 text-gray-700">Min Guests</label>
             <input
               type="number"
-              min ="0"
-              placeholder="Number of guests"
+              min="0"
+              placeholder="Guests"
               value={maxGuests}
               onChange={(e) => setMaxGuests(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full p-2 text-sm border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-red-500"
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-end">
             <button
               type="button"
               onClick={handleSearch}
-              className="flex-1 p-2 bg-red-500 text-white rounded font-semibold hover:bg-red-600"
+              className="flex-1 p-2 bg-red-500 text-white rounded-lg font-semibold text-sm hover:bg-red-600 transition"
             >
               Apply
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="flex-1 p-2 bg-gray-300 text-gray-700 rounded font-semibold hover:bg-gray-400"
+              className="flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg font-semibold text-sm hover:bg-gray-300 transition"
             >
               Reset
             </button>

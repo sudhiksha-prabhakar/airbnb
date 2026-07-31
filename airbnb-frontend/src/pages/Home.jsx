@@ -78,10 +78,10 @@ const Home = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Results Info */}
-      <div className="mb-6">
-        <p className="text-gray-600 text-lg">
+      <div className="mb-4 sm:mb-6">
+        <p className="text-gray-600 text-sm sm:text-base">
           Found <span className="font-bold text-red-500">{pagination.totalCount}</span> properties
           {pagination.totalPages > 1 && (
             <span> • Page {pagination.currentPage} of {pagination.totalPages}</span>
@@ -90,7 +90,7 @@ const Home = () => {
       </div>
 
       {/* Properties Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
         {properties.map((property) => (
           <PropertyCard key={property._id} property={property} />
         ))}
@@ -98,31 +98,30 @@ const Home = () => {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mb-8">
+        <div className="flex flex-wrap justify-center items-center gap-1.5 sm:gap-2 mb-8 px-2">
           {/* Previous Button */}
           <button
             onClick={() => handlePageChange(pagination.currentPage - 1)}
             disabled={pagination.currentPage === 1}
-            className="px-4 py-2 border border-red-500 text-red-500 rounded-lg font-semibold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 border border-red-500 text-red-500 text-xs sm:text-sm rounded-lg font-semibold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
-            ← Previous
+            ← Prev
           </button>
 
           {/* Page Numbers */}
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2 overflow-x-auto py-1 max-w-full">
             {Array.from({ length: pagination.totalPages }, (_, i) => {
               const pageNum = i + 1;
-              // Show first page, last page, current page, and pages around current
               const isVisible =
                 pageNum === 1 ||
                 pageNum === pagination.totalPages ||
                 Math.abs(pageNum - pagination.currentPage) <= 1;
 
               if (!isVisible && pageNum === 2) {
-                return <span key="dots1" className="px-2 py-2">...</span>;
+                return <span key="dots1" className="px-1 py-1 text-xs sm:text-sm">...</span>;
               }
               if (!isVisible && pageNum === pagination.totalPages - 1) {
-                return <span key="dots2" className="px-2 py-2">...</span>;
+                return <span key="dots2" className="px-1 py-1 text-xs sm:text-sm">...</span>;
               }
               if (!isVisible) return null;
 
@@ -130,7 +129,7 @@ const Home = () => {
                 <button
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition ${
                     pageNum === pagination.currentPage
                       ? "bg-red-500 text-white"
                       : "border border-gray-300 text-gray-700 hover:bg-gray-100"
@@ -146,7 +145,7 @@ const Home = () => {
           <button
             onClick={() => handlePageChange(pagination.currentPage + 1)}
             disabled={pagination.currentPage === pagination.totalPages}
-            className="px-4 py-2 border border-red-500 text-red-500 rounded-lg font-semibold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 border border-red-500 text-red-500 text-xs sm:text-sm rounded-lg font-semibold hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Next →
           </button>
