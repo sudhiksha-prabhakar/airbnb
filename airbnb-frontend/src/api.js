@@ -47,6 +47,7 @@ export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
   getUsers: () => api.get('/admin/users'),
   getBookings: () => api.get('/admin/bookings'),
+  getProperties: (params) => api.get('/admin/properties', { params }),
 };
 
 export default api;
