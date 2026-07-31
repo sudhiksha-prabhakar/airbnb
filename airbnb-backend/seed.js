@@ -56,11 +56,12 @@ const seedData = async () => {
     console.log("Existing users cleared.");
 
     const users = await User.insertMany([
+      { name: "Admin System", email: "admin@example.com", password: hashedPassword, role: "admin", isHost: true },
       { name: "John Doe", email: "john@example.com", password: hashedPassword, role: "user" },
       { name: "Jane Host", email: "jane@example.com", password: hashedPassword, isHost: true, role: "host", hostDescription: "Experienced host" },
       { name: "Alice User", email: "alice@example.com", password: hashedPassword }
     ]);
-    console.log(`Successfully seeded ${users.length} users! 👥`);
+    console.log(`Successfully seeded ${users.length} users (including Admin)! 👥`);
 
     // 7. Assign host to some properties
     const host = users.find(u => u.isHost);

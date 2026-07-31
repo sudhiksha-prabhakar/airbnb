@@ -70,16 +70,28 @@ const Navbar = () => {
               >
                 Sign Up
               </Link>
+              <Link 
+                to="/admin/login" 
+                className="text-xs text-red-100 opacity-80 hover:opacity-100 no-underline px-2 py-1 border border-red-400 rounded-full"
+              >
+                🛡️ Admin
+              </Link>
             </div>
           ) : (
             <div className="flex items-center gap-3">
               <span className="text-xs bg-red-600 px-3 py-1.5 rounded-full font-medium">
-                {isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
+                {user?.role === "admin" ? `🛡️ ${user?.name}` : isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
               </span>
-              <Link to="/bookings" className="text-white no-underline font-medium hover:opacity-80 text-sm">
-                Bookings
-              </Link>
-              {isHost && (
+              {user?.role === "admin" ? (
+                <Link to="/admin/dashboard" className="text-white bg-slate-800 px-3 py-1.5 rounded-full no-underline font-semibold text-xs hover:bg-slate-900 transition">
+                  🛡️ Admin Panel
+                </Link>
+              ) : (
+                <Link to="/bookings" className="text-white no-underline font-medium hover:opacity-80 text-sm">
+                  Bookings
+                </Link>
+              )}
+              {isHost && user?.role !== "admin" && (
                 <Link to="/host" className="text-white no-underline font-medium hover:opacity-80 text-sm">
                   Dashboard
                 </Link>
@@ -99,11 +111,11 @@ const Navbar = () => {
           <div className="w-full md:hidden pt-3 pb-2 border-t border-red-400 flex flex-col gap-2">
             {isAuthenticated && (
               <div className="px-2 py-1 text-sm bg-red-600 rounded font-medium text-center">
-                {isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
+                {user?.role === "admin" ? `🛡️ ${user?.name} (Admin)` : isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
               </div>
             )}
             
-            {isAuthenticated && !isHost && (
+            {isAuthenticated && !isHost && user?.role !== "admin" && (
               <Link
                 to="/become-host"
                 onClick={() => setMobileMenuOpen(false)}
@@ -114,31 +126,50 @@ const Navbar = () => {
             )}
 
             {!isAuthenticated ? (
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2 bg-red-600 text-white rounded font-medium text-sm no-underline"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex-1 text-center py-2 bg-white text-red-500 rounded font-semibold text-sm no-underline"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
                 <Link
-                  to="/login"
+                  to="/admin/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 bg-red-600 text-white rounded font-medium text-sm no-underline"
+                  className="w-full text-center py-1.5 bg-slate-800 text-white rounded font-medium text-xs no-underline"
                 >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 text-center py-2 bg-white text-red-500 rounded font-semibold text-sm no-underline"
-                >
-                  Sign Up
+                  🛡️ Admin Login Portal
                 </Link>
               </div>
             ) : (
               <>
-                <Link
-                  to="/bookings"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2 text-white no-underline font-medium text-sm hover:bg-red-600 px-3 rounded"
-                >
-                  My Bookings
-                </Link>
+                {user?.role === "admin" ? (
+                  <Link
+                    to="/admin/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-white bg-slate-800 no-underline font-semibold text-sm px-3 rounded text-center"
+                  >
+                    🛡️ Admin Control Panel
+                  </Link>
+                ) : (
+                  <Link
+                    to="/bookings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-white no-underline font-medium text-sm hover:bg-red-600 px-3 rounded"
+                  >
+                    My Bookings
+                  </Link>
+                )}
                 {isHost && (
                   <Link
                     to="/host"

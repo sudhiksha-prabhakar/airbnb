@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
     becomeHost,
     isAuthenticated: !!token,
     isHost: user?.isHost || false,
+    isAdmin: user?.role === 'admin',
   };
 
   console.log('AuthContext value:', { isAuthenticated: value.isAuthenticated, isHost: value.isHost });

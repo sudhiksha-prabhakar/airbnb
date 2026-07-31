@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false }, // Hide by default
-    role: { type: String, enum: ["user", "host"], default: "user" },
+    role: { type: String, enum: ["user", "host", "admin"], default: "user" },
     isHost: { type: Boolean, default: false },
     hostDescription: { type: String, default: "" },
     profilePhoto: { type: String, default: null }

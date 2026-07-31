@@ -11,6 +11,8 @@ import PropertyDetails from "./pages/PropertyDetails";
 import HostDashboard from "./pages/HostDashboard";
 import BecomeHost from "./pages/BecomeHost";
 import Bookings from "./pages/Bookings";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -20,6 +22,15 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/become-host" element={<BecomeHost />} />
         <Route

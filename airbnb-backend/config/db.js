@@ -52,6 +52,7 @@ const autoSeed = async () => {
     const hashedPassword = await bcrypt.hash("password123", salt);
 
     const users = await User.insertMany([
+      { name: "Admin System", email: "admin@example.com", password: hashedPassword, role: "admin", isHost: true },
       { name: "John Doe", email: "john@example.com", password: hashedPassword, role: "user" },
       { name: "Jane Host", email: "jane@example.com", password: hashedPassword, isHost: true, role: "host", hostDescription: "Experienced host" },
       { name: "Alice User", email: "alice@example.com", password: hashedPassword }

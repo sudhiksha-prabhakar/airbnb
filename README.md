@@ -16,6 +16,7 @@ A full-stack Airbnb clone built using MongoDB Atlas, Express, React, and Node.js
 
 | Role | Email | Password | Features |
 |---|---|---|---|
+| **Admin** | `admin@example.com` | `password123` | System Administrator |
 | **User (Renter)** | `john@example.com` | `password123` | Active bookings, property reservations |
 | **Host** | `jane@example.com` | `password123` | Host dashboard, property creation |
 | **User (Renter)** | `alice@example.com` | `password123` | Active bookings |
