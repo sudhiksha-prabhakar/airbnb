@@ -4,8 +4,8 @@ import { authAPI } from "../api";
 import { useAuth } from "../context/AuthContext";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -72,10 +72,6 @@ const AdminLogin = () => {
               className="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm"
               required
             />
-          </div>
-
-          <div className="bg-slate-100 p-3 rounded-lg text-xs text-slate-600">
-            <span className="font-bold">Default Admin:</span> admin@example.com / password123
           </div>
 
           <button

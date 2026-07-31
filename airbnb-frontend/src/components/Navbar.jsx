@@ -17,7 +17,7 @@ const Navbar = () => {
   return (
     <nav className="bg-red-500 text-white sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Top bar on mobile: Logo + Mobile Toggle */}
+        {/* Top bar on mobile: Logo + Mobile Admin + Mobile Toggle */}
         <div className="w-full md:w-auto flex items-center justify-between">
           <Link 
             to="/" 
@@ -27,20 +27,29 @@ const Navbar = () => {
             <span>airbnb</span>
           </Link>
 
-          {/* Mobile Hamburger Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <Link
+              to={isAuthenticated && user?.role === "admin" ? "/admin/dashboard" : "/admin/login"}
+              className="text-xs bg-slate-900 text-white font-semibold px-2.5 py-1 rounded-full no-underline flex items-center gap-1 shadow-sm"
+            >
+              🛡️ Admin
+            </Link>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Center: Search Bar */}
