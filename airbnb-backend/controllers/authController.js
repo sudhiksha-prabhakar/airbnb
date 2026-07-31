@@ -2,8 +2,8 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 // Generate JWT
-const generateToken = (userId) => {
-  return jwt.sign({ id: userId.toString() }, process.env.JWT_SECRET, {
+const generateToken = (userId, role) => {
+  return jwt.sign({ id: userId.toString(), role: role || "user" }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
       isHost: user.isHost,
       hostDescription: user.hostDescription,
       profilePhoto: user.profilePhoto,
-      token: generateToken(user._id),
+      token: generateToken(user._id, user.role),
     });
 
   } catch (error) {
