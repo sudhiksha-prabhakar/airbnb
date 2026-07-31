@@ -93,8 +93,11 @@ const autoSeed = async () => {
 const connectDB = async () => {
   try {
     const uri = process.env.MONGO_URI || "mongodb://localhost:27017/airbnb";
+    if (!process.env.MONGO_URI) {
+      console.warn("⚠️ MONGO_URI environment variable is not set. Attempting default connection...");
+    }
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2500,
+      serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });
     console.log(" MongoDB connected successfully");
@@ -110,7 +113,8 @@ const connectDB = async () => {
       console.log(" MongoDB connected successfully (In-Memory Database)");
       await autoSeed();
     } catch (memErr) {
-      console.error(" MongoDB connection failed completely:", memErr.message);
+      console.error(" ❌ MongoDB Connection Failed! Please set MONGO_URI environment variable in your deployment settings.");
+      console.error(" Error details:", memErr.message);
       process.exit(1);
     }
   }
