@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 const SearchBar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
+  const filterRef = useRef(null);
   
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
@@ -12,8 +14,24 @@ const SearchBar = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [justSearched, setJustSearched] = useState(false);
 
+  // Close filter dropdown on page navigation
+  useEffect(() => {
+    setShowFilters(false);
+  }, [location.pathname]);
+
+  // Click outside to close filter modal
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // sync inputs with URL when user navigates, but skip right after search
-  React.useEffect(() => {
+  useEffect(() => {
     if (justSearched) {
       setJustSearched(false);
       return;
@@ -25,7 +43,7 @@ const SearchBar = () => {
   }, [searchParams, justSearched]);
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const params = new URLSearchParams();
     
     if (search) params.append('search', search);
@@ -35,9 +53,9 @@ const SearchBar = () => {
     params.append('page', '1'); // Reset to page 1 on new search
 
     navigate(`/?${params.toString()}`);
-    // clear search input and mark we just navigated via search
     setSearch('');
     setJustSearched(true);
+    setShowFilters(false);
   };
 
   const handleReset = () => {
@@ -50,7 +68,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="w-full relative">
+    <div ref={filterRef} className="w-full relative">
       <form onSubmit={handleSearch} className="flex gap-1.5 sm:gap-2 items-center">
         <input
           type="text"
@@ -78,7 +96,7 @@ const SearchBar = () => {
 
       {/* Filter Dropdown Modal */}
       {showFilters && (
-        <div className="absolute top-12 sm:top-14 left-0 right-0 bg-white shadow-xl p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 z-50 rounded-2xl border border-gray-200">
+        <div className="absolute top-12 sm:top-14 left-0 right-0 bg-white shadow-2xl p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 z-50 rounded-2xl border border-gray-200">
           <div>
             <label className="block text-xs sm:text-sm font-semibold mb-1 text-gray-700">Min Price (₹)</label>
             <input
