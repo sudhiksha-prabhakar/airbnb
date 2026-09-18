@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, isGuestFavorite = true }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Normalize images array
   const rawImages = property.images && property.images.length > 0 
     ? property.images 
     : [property.image || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80"];
@@ -31,41 +30,49 @@ const PropertyCard = ({ property }) => {
     setIsFavorite(!isFavorite);
   };
 
-  // Mock deterministic rating based on title length for realistic presentation
-  const mockRating = (4.7 + ((property.title?.length || 5) % 3) * 0.1).toFixed(2);
+  const mockRating = (4.8 + ((property.title?.length || 5) % 3) * 0.08).toFixed(2);
+  const nightlyPrice = property.price || 3500;
+  const twoNightPrice = (nightlyPrice * 2).toLocaleString("en-IN");
 
   return (
     <Link 
       to={`/property/${property._id}`} 
-      className="group block no-underline text-inherit cursor-pointer focus:outline-none"
+      className="group block no-underline text-inherit cursor-pointer shrink-0 w-64 sm:w-72"
     >
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2">
         
-        {/* Image Container */}
-        <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gray-200 shadow-xs">
+        {/* Image Container with rounded-2xl */}
+        <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-gray-200 shadow-xs">
           <img
             src={images[currentImageIndex] || images[0]}
             alt={property.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
-          {/* Favorite Heart Button */}
+          {/* Guest Favourite Badge (Top-left) */}
+          {isGuestFavorite && (
+            <div className="absolute top-3 left-3 bg-white/95 text-black text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">
+              Guest favourite
+            </div>
+          )}
+
+          {/* Wishlist Heart Button (Top-right) */}
           <button
             onClick={toggleFavorite}
-            className="absolute top-3 right-3 p-1.5 rounded-full hover:scale-110 transition bg-transparent border-none cursor-pointer z-10"
+            className="absolute top-3 right-3 p-1 rounded-full bg-transparent border-none cursor-pointer z-10"
             aria-label="Add to wishlist"
           >
             <Heart
-              size={22}
+              size={20}
               className={`transition ${
                 isFavorite
                   ? "fill-[#FF385C] text-[#FF385C]"
-                  : "fill-black/30 text-white stroke-[2]"
+                  : "fill-black/40 text-white stroke-[2]"
               }`}
             />
           </button>
 
-          {/* Image Navigation Arrows (Hover visible if multiple images) */}
+          {/* Image Navigation Controls */}
           {images.length > 1 && (
             <>
               {currentImageIndex > 0 && (
@@ -73,7 +80,7 @@ const PropertyCard = ({ property }) => {
                   onClick={handlePrevImage}
                   className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 shadow-md text-gray-800 hover:scale-110 transition opacity-0 group-hover:opacity-100 z-10"
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={14} />
                 </button>
               )}
 
@@ -82,59 +89,23 @@ const PropertyCard = ({ property }) => {
                   onClick={handleNextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 shadow-md text-gray-800 hover:scale-110 transition opacity-0 group-hover:opacity-100 z-10"
                 >
-                  <ChevronRight size={16} />
+                  <ChevronRight size={14} />
                 </button>
               )}
-
-              {/* Carousel Dot Indicators */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
-                {images.slice(0, 5).map((_, idx) => (
-                  <span
-                    key={idx}
-                    className={`h-1.5 rounded-full transition-all ${
-                      idx === currentImageIndex
-                        ? "w-3 bg-white"
-                        : "w-1.5 bg-white/60"
-                    }`}
-                  />
-                ))}
-              </div>
             </>
           )}
 
         </div>
 
-        {/* Property Metadata Info */}
+        {/* Info Rows */}
         <div className="flex flex-col gap-0.5 px-0.5">
-          
-          {/* Row 1: Location & Star Rating */}
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-sm font-bold text-gray-900 truncate m-0">
-              {property.location || "Beautiful Stay"}
-            </h3>
-
-            <div className="flex items-center gap-1 shrink-0 text-xs font-semibold text-gray-900">
-              <Star size={12} className="fill-black text-black" />
-              <span>{mockRating}</span>
-            </div>
-          </div>
-
-          {/* Row 2: Property Title / Category details */}
-          <p className="text-xs text-gray-500 truncate m-0 font-normal">
+          <h3 className="text-sm font-bold text-gray-900 truncate m-0">
             {property.title}
+          </h3>
+
+          <p className="text-xs text-gray-600 m-0 font-normal">
+            <span className="font-semibold text-gray-900">₹{twoNightPrice}</span> for 2 nights · <span className="font-semibold">★ {mockRating}</span>
           </p>
-
-          {/* Row 3: Capacity / Dates metadata */}
-          <p className="text-xs text-gray-500 m-0 font-normal">
-            {property.maxGuests ? `Up to ${property.maxGuests} guests` : "Self check-in"}
-          </p>
-
-          {/* Row 4: Pricing */}
-          <div className="mt-1 flex items-baseline gap-1 text-sm text-gray-900">
-            <span className="font-bold">₹{property.price ? property.price.toLocaleString("en-IN") : "3,500"}</span>
-            <span className="text-xs text-gray-600 font-normal">night</span>
-          </div>
-
         </div>
 
       </div>

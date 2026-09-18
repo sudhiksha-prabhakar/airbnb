@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { propertyAPI } from "../api";
 import PropertyCard from "../components/PropertyCard";
-import CategoryBar from "../components/CategoryBar";
 import Footer from "../components/Footer";
-import { RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Tag, ArrowRight } from "lucide-react";
 
 const Home = () => {
   const [searchParams] = useSearchParams();
@@ -12,42 +11,32 @@ const Home = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [showTaxes, setShowTaxes] = useState(false);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalCount: 0,
-  });
+
+  const section1Ref = useRef(null);
+  const section2Ref = useRef(null);
+  const section3Ref = useRef(null);
 
   const search = searchParams.get("search") || "";
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
   const maxGuests = searchParams.get("maxGuests") || "";
-  const page = parseInt(searchParams.get("page") || "1");
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        // Combine category filter with search query if category is selected
-        const activeSearch = selectedCategory !== "all" 
-          ? (search ? `${search} ${selectedCategory}` : selectedCategory)
-          : search;
-
         const res = await propertyAPI.getAllProperties({
-          search: activeSearch,
+          search,
           minPrice,
           maxPrice,
           maxGuests,
-          page,
+          page: 1,
         });
 
         setProperties(res.data.properties || []);
-        setPagination(res.data.pagination || { currentPage: 1, totalPages: 1, totalCount: 0 });
         setError("");
       } catch (err) {
-        setError("Failed to load properties from server");
+        setError("Failed to load properties");
         console.error("Error fetching properties:", err);
       } finally {
         setLoading(false);
@@ -55,152 +44,164 @@ const Home = () => {
     };
 
     fetchProperties();
-  }, [search, minPrice, maxPrice, maxGuests, page, selectedCategory]);
+  }, [search, minPrice, maxPrice, maxGuests]);
 
-  const handlePageChange = (newPage) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", newPage);
-    navigate(`/?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollContainer = (ref, direction) => {
+    if (ref.current) {
+      const scrollAmount = direction === "left" ? -320 : 320;
+      ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
   };
 
-  const handleSelectCategory = (catId) => {
-    setSelectedCategory(catId);
-    const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
-    navigate(`/?${params.toString()}`);
-  };
+  // Group properties into realistic location sections
+  const northGoaHomes = properties.slice(0, 6);
+  const puducherryHomes = properties.length > 6 ? properties.slice(6, 12) : properties.slice(0, 6);
+  const topVillas = properties.length > 12 ? properties.slice(12) : properties;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white relative">
       
-      {/* Airbnb Category Bar */}
-      <CategoryBar
-        selectedCategory={selectedCategory}
-        onSelectCategory={handleSelectCategory}
-      />
-
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-12">
         
-        {/* Taxes Display Toggle Banner */}
-        <div className="mb-6 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h4 className="font-bold text-gray-900 text-sm">Display total price</h4>
-            <p className="text-xs text-gray-500">Includes all fees, before taxes</p>
-          </div>
-
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showTaxes}
-              onChange={(e) => setShowTaxes(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#222222]"></div>
-          </label>
-        </div>
-
-        {/* Loading Skeleton */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-            {Array.from({ length: 8 }).map((_, idx) => (
-              <div key={idx} className="flex flex-col gap-3">
-                <div className="w-full aspect-square rounded-2xl animate-shimmer" />
-                <div className="h-4 w-3/4 rounded animate-shimmer" />
-                <div className="h-3 w-1/2 rounded animate-shimmer" />
-                <div className="h-4 w-1/3 rounded animate-shimmer" />
-              </div>
-            ))}
+          <div className="space-y-8">
+            <div className="h-8 w-64 bg-gray-200 rounded animate-shimmer" />
+            <div className="flex gap-4 overflow-hidden">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="w-64 h-64 bg-gray-200 rounded-2xl animate-shimmer shrink-0" />
+              ))}
+            </div>
           </div>
         ) : error ? (
           <div className="text-center py-16 bg-red-50 rounded-2xl border border-red-100 my-8">
             <h3 className="text-lg font-bold text-red-600 mb-2">{error}</h3>
-            <p className="text-sm text-gray-600 mb-4">Please check your connection or database configuration</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white font-semibold rounded-xl text-xs hover:bg-red-600 transition cursor-pointer"
-            >
-              <RefreshCw size={14} />
-              <span>Retry</span>
-            </button>
-          </div>
-        ) : properties.length === 0 ? (
-          <div className="text-center py-20 bg-gray-50 rounded-3xl border border-gray-200 my-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No properties found</h3>
-            <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-              Try changing your search destination, clearing price filters, or picking a different category.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedCategory("all");
-                navigate("/");
-              }}
-              className="px-6 py-2.5 bg-black text-white font-semibold text-xs rounded-xl hover:bg-gray-800 transition cursor-pointer"
-            >
-              Clear all filters
-            </button>
           </div>
         ) : (
           <>
-            {/* Properties Responsive Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10 mb-12">
-              {properties.map((property) => (
-                <PropertyCard key={property._id} property={property} />
-              ))}
-            </div>
-
-            {/* Airbnb Pagination Controls */}
-            {pagination.totalPages > 1 && (
-              <div className="flex flex-col items-center gap-3 my-12 border-t border-gray-200 pt-8">
-                <p className="text-xs text-gray-500">
-                  Showing page <span className="font-bold text-gray-900">{pagination.currentPage}</span> of{" "}
-                  <span className="font-bold text-gray-900">{pagination.totalPages}</span> ({pagination.totalCount} listings)
-                </p>
+            {/* Section 1: Popular homes in North Goa */}
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <button 
+                  onClick={() => navigate("/?search=Goa")}
+                  className="flex items-center gap-2 text-xl sm:text-2xl font-extrabold text-gray-900 group border-none bg-transparent cursor-pointer p-0"
+                >
+                  <span>Popular homes in North Goa</span>
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition text-gray-700" />
+                </button>
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handlePageChange(pagination.currentPage - 1)}
-                    disabled={pagination.currentPage === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-800 hover:border-black disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                    onClick={() => scrollContainer(section1Ref, "left")}
+                    className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
                   >
-                    ← Previous
+                    <ChevronLeft size={16} className="text-gray-700" />
                   </button>
-
-                  <div className="flex gap-1">
-                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`w-8 h-8 rounded-xl text-xs font-bold transition cursor-pointer ${
-                          pageNum === pagination.currentPage
-                            ? "bg-black text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
-                  </div>
-
                   <button
-                    onClick={() => handlePageChange(pagination.currentPage + 1)}
-                    disabled={pagination.currentPage === pagination.totalPages}
-                    className="px-4 py-2 border border-gray-300 rounded-xl text-xs font-bold text-gray-800 hover:border-black disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                    onClick={() => scrollContainer(section1Ref, "right")}
+                    className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
                   >
-                    Next →
+                    <ChevronRight size={16} className="text-gray-700" />
                   </button>
                 </div>
               </div>
+
+              {/* Horizontal Scroll Container */}
+              <div
+                ref={section1Ref}
+                className="flex items-center gap-5 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1"
+              >
+                {northGoaHomes.map((property, idx) => (
+                  <PropertyCard key={property._id} property={property} isGuestFavorite={idx % 2 === 0} />
+                ))}
+              </div>
+            </section>
+
+            {/* Section 2: Available in Puducherry this weekend */}
+            <section className="space-y-4 pt-4">
+              <div className="flex items-center justify-between">
+                <button 
+                  onClick={() => navigate("/?search=Puducherry")}
+                  className="flex items-center gap-2 text-xl sm:text-2xl font-extrabold text-gray-900 group border-none bg-transparent cursor-pointer p-0"
+                >
+                  <span>Available in Puducherry this weekend</span>
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition text-gray-700" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => scrollContainer(section2Ref, "left")}
+                    className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
+                  >
+                    <ChevronLeft size={16} className="text-gray-700" />
+                  </button>
+                  <button
+                    onClick={() => scrollContainer(section2Ref, "right")}
+                    className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
+                  >
+                    <ChevronRight size={16} className="text-gray-700" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={section2Ref}
+                className="flex items-center gap-5 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1"
+              >
+                {puducherryHomes.map((property, idx) => (
+                  <PropertyCard key={property._id} property={property} isGuestFavorite={idx % 3 === 0} />
+                ))}
+              </div>
+            </section>
+
+            {/* Section 3: Top Rated Stays & Villas */}
+            {topVillas.length > 0 && (
+              <section className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+                    Top rated stays & luxury villas
+                  </h2>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => scrollContainer(section3Ref, "left")}
+                      className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
+                    >
+                      <ChevronLeft size={16} className="text-gray-700" />
+                    </button>
+                    <button
+                      onClick={() => scrollContainer(section3Ref, "right")}
+                      className="p-2 rounded-full border border-gray-300 hover:border-black bg-white shadow-xs transition cursor-pointer"
+                    >
+                      <ChevronRight size={16} className="text-gray-700" />
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  ref={section3Ref}
+                  className="flex items-center gap-5 overflow-x-auto no-scrollbar scroll-smooth py-2 px-1"
+                >
+                  {topVillas.map((property, idx) => (
+                    <PropertyCard key={property._id} property={property} isGuestFavorite={true} />
+                  ))}
+                </div>
+              </section>
             )}
           </>
         )}
 
       </main>
 
-      {/* Footer Component */}
-      <Footer />
+      {/* Floating Center Badge: Prices Include All Fees */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-full shadow-2xl text-xs font-bold hover:scale-105 transition cursor-pointer">
+          <Tag size={16} className="text-[#FF385C] fill-[#FF385C]" />
+          <span>Prices include all fees</span>
+        </div>
+      </div>
 
+      <Footer />
     </div>
   );
 };
