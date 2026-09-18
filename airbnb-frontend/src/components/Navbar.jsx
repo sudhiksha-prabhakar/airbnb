@@ -45,7 +45,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Center: Top Mode Tabs (All, Homes, Experiences, Services) */}
+          {/* Center: Top Mode Tabs (All, Homes) */}
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700">
             
             {/* All */}
@@ -72,32 +72,6 @@ const Navbar = () => {
             >
               <span className="text-xl">🏡</span>
               <span>Homes</span>
-            </button>
-
-            {/* Experiences */}
-            <button
-              onClick={() => setActiveTab("experiences")}
-              className={`flex items-center gap-2 pb-1.5 border-b-2 transition cursor-pointer bg-transparent ${
-                activeTab === "experiences"
-                  ? "border-black text-black font-bold"
-                  : "border-transparent text-gray-500 hover:text-black"
-              }`}
-            >
-              <span className="text-xl">🎈</span>
-              <span>Experiences</span>
-            </button>
-
-            {/* Services */}
-            <button
-              onClick={() => setActiveTab("services")}
-              className={`flex items-center gap-2 pb-1.5 border-b-2 transition cursor-pointer bg-transparent ${
-                activeTab === "services"
-                  ? "border-black text-black font-bold"
-                  : "border-transparent text-gray-500 hover:text-black"
-              }`}
-            >
-              <span className="text-xl">🛎️</span>
-              <span>Services</span>
             </button>
 
           </div>
