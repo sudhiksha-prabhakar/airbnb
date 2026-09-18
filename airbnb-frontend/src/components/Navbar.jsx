@@ -1,205 +1,198 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Globe, Menu, User, ShieldCheck, LogOut, Home, Calendar, PlusCircle } from "lucide-react";
 import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, logout, isHost, user } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
-    setMobileMenuOpen(false);
+    setUserMenuOpen(false);
     navigate("/login");
   };
 
   return (
-    <nav className="bg-red-500 text-white sticky top-0 z-50 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-        {/* Top bar on mobile: Logo + Mobile Admin + Mobile Toggle */}
-        <div className="w-full md:w-auto flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="text-white text-2xl font-bold no-underline hover:opacity-90 tracking-wide flex items-center gap-2"
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 transition-all shadow-xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+        
+        {/* Brand Logo - Airbnb Belo */}
+        <Link 
+          to="/" 
+          className="flex items-center gap-1.5 no-underline group shrink-0"
+        >
+          {/* Official Airbnb Belo SVG logo */}
+          <svg className="h-8 w-8 text-[#FF385C]" viewBox="0 0 32 32" fill="currentColor">
+            <path d="M16 1c2.008 0 3.463.963 4.751 3.269l.533 1.025c1.954 3.83 6.114 12.54 7.1 14.836l.145.353c.667 1.591.91 2.472.96 3.396l.011.315c0 4.008-3.297 7.806-7.5 7.806-3.13 0-5.719-1.996-6.852-4.707l-.148-.372c-.22-.577-.521-1.423-.86-2.42l-.14-.415c-.218.636-.453 1.258-.674 1.835l-.18.461c-1.127 2.766-3.722 4.818-6.896 4.818-4.203 0-7.5-3.798-7.5-7.806 0-.96.22-1.874.887-3.463l.17-.384c.96-2.235 5.12-10.947 7.074-14.777l.559-1.084C12.537 1.963 13.992 1 16 1zm0 2c-1.24 0-2.227.618-3.25 2.45l-.465.903C10.375 10.11 6.275 18.7 5.347 20.87l-.133.303c-.538 1.282-.714 1.967-.747 2.628l-.007.205c0 2.923 2.373 5.806 5.54 5.806 2.378 0 4.385-1.523 5.253-3.665l.135-.357c.414-1.125.867-2.473 1.34-3.957l.272-.852.272.852c.473 1.484.926 2.832 1.34 3.957l.135.357c.868 2.142 2.875 3.665 5.253 3.665 3.167 0 5.54-2.883 5.54-5.806 0-.69-.153-1.4-.73-2.775l-.157-.361c-.928-2.17-5.028-10.76-6.956-14.517l-.487-.946C18.227 3.618 17.24 3 16 3zm0 10c2.761 0 5 2.239 5 5 0 2.21-1.436 4.084-3.418 4.734l-.328.098c-1.343.359-2.765.176-3.967-.512l-.287-.174C11.758 21.364 11 19.78 11 18c0-2.761 2.239-5 5-5zm0 2c-1.657 0-3 1.343-3 3 0 1.077.568 2.023 1.442 2.548l.245.134c.732.366 1.58.46 2.378.261l.241-.07C18.398 20.485 19 19.313 19 18c0-1.657-1.343-3-3-3z"/>
+          </svg>
+          <span className="text-xl font-bold tracking-tight text-[#FF385C] hidden sm:inline">
+            airbnb
+          </span>
+        </Link>
+
+        {/* Center Search Bar Pill Component */}
+        <div className="flex-1 max-w-lg mx-2 sm:mx-4">
+          <SearchBar onOpenFullSearch={() => setSearchModalOpen(true)} />
+        </div>
+
+        {/* Right Menu Links & User Profile Dropdown */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          
+          {/* Become a Host Button */}
+          {(!isAuthenticated || !isHost) && (
+            <Link
+              to={isAuthenticated ? "/become-host" : "/login"}
+              className="hidden lg:block text-xs sm:text-sm font-semibold text-gray-800 hover:bg-gray-100 rounded-full px-3.5 py-2.5 transition no-underline"
+            >
+              Airbnb your home
+            </Link>
+          )}
+
+          {/* Globe Button */}
+          <button 
+            className="hidden sm:flex p-2.5 hover:bg-gray-100 rounded-full text-gray-700 transition cursor-pointer bg-transparent border-none"
+            aria-label="Language and currency"
           >
-            <span className="text-3xl">🏠</span>
-            <span>airbnb</span>
-          </Link>
+            <Globe size={18} />
+          </button>
 
-          <div className="flex items-center gap-2 md:hidden">
-            <Link
-              to={isAuthenticated && user?.role === "admin" ? "/admin/dashboard" : "/admin/login"}
-              className="text-xs bg-slate-900 text-white font-semibold px-2.5 py-1 rounded-full no-underline flex items-center gap-1 shadow-sm"
-            >
-              🛡️ Admin
-            </Link>
-
-            {/* Mobile Hamburger Button */}
+          {/* User Profile Pill */}
+          <div className="relative" ref={menuRef}>
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white p-2 rounded-lg hover:bg-red-600 focus:outline-none"
-              aria-label="Toggle menu"
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="flex items-center gap-2.5 border border-gray-300 hover:shadow-md rounded-full px-3 py-1.5 transition cursor-pointer bg-white"
+              aria-label="User menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <Menu size={16} className="text-gray-700" />
+              
+              <div className="w-7 h-7 rounded-full bg-gray-600 text-white flex items-center justify-center font-bold text-xs overflow-hidden">
+                {isAuthenticated && user?.name ? (
+                  user.name.charAt(0).toUpperCase()
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <User size={16} className="text-white" />
                 )}
-              </svg>
+              </div>
             </button>
-          </div>
-        </div>
 
-        {/* Center: Search Bar */}
-        <div className="w-full md:flex-1 md:max-w-2xl">
-          <SearchBar />
-        </div>
-
-        {/* Desktop Navigation Links */}
-        <div className="hidden md:flex gap-3 items-center whitespace-nowrap">
-          {isAuthenticated && !isHost && (
-            <Link
-              to="/become-host"
-              className="px-4 py-2 bg-white text-red-500 rounded-full font-semibold hover:bg-gray-100 no-underline text-sm transition"
-            >
-              Become a Host
-            </Link>
-          )}
-
-          {!isAuthenticated ? (
-            <div className="flex items-center gap-3">
-              <Link to="/login" className="text-white no-underline font-medium hover:opacity-80 text-sm">
-                Login
-              </Link>
-              <Link 
-                to="/register" 
-                className="px-4 py-2 bg-white text-red-500 rounded-full font-semibold hover:bg-gray-100 no-underline text-sm transition"
-              >
-                Sign Up
-              </Link>
-              <Link 
-                to="/admin/login" 
-                className="text-xs text-red-100 opacity-80 hover:opacity-100 no-underline px-2 py-1 border border-red-400 rounded-full"
-              >
-                🛡️ Admin
-              </Link>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <span className="text-xs bg-red-600 px-3 py-1.5 rounded-full font-medium">
-                {user?.role === "admin" ? `🛡️ ${user?.name}` : isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
-              </span>
-              {user?.role === "admin" ? (
-                <Link to="/admin/dashboard" className="text-white bg-slate-800 px-3 py-1.5 rounded-full no-underline font-semibold text-xs hover:bg-slate-900 transition">
-                  🛡️ Admin Panel
-                </Link>
-              ) : (
-                <Link to="/bookings" className="text-white no-underline font-medium hover:opacity-80 text-sm">
-                  Bookings
-                </Link>
-              )}
-              {isHost && user?.role !== "admin" && (
-                <Link to="/host" className="text-white no-underline font-medium hover:opacity-80 text-sm">
-                  Dashboard
-                </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                className="bg-white text-red-500 border-none px-3 py-1.5 rounded-full font-semibold text-sm cursor-pointer hover:bg-gray-100 transition"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Dropdown Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="w-full md:hidden pt-3 pb-2 border-t border-red-400 flex flex-col gap-2">
-            {isAuthenticated && (
-              <div className="px-2 py-1 text-sm bg-red-600 rounded font-medium text-center">
-                {user?.role === "admin" ? `🛡️ ${user?.name} (Admin)` : isHost ? `🏠 ${user?.name}` : `👤 ${user?.name}`}
-              </div>
-            )}
-            
-            {isAuthenticated && !isHost && user?.role !== "admin" && (
-              <Link
-                to="/become-host"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2 bg-white text-red-500 rounded font-semibold no-underline text-sm"
-              >
-                Become a Host
-              </Link>
-            )}
-
-            {!isAuthenticated ? (
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 text-center py-2 bg-red-600 text-white rounded font-medium text-sm no-underline"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 text-center py-2 bg-white text-red-500 rounded font-semibold text-sm no-underline"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-                <Link
-                  to="/admin/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-1.5 bg-slate-800 text-white rounded font-medium text-xs no-underline"
-                >
-                  🛡️ Admin Login Portal
-                </Link>
-              </div>
-            ) : (
-              <>
-                {user?.role === "admin" ? (
-                  <Link
-                    to="/admin/dashboard"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-2 text-white bg-slate-800 no-underline font-semibold text-sm px-3 rounded text-center"
-                  >
-                    🛡️ Admin Control Panel
-                  </Link>
+            {/* Dropdown Menu Modal */}
+            {userMenuOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-200 py-2 z-50 text-sm animate-in fade-in duration-150">
+                {!isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2.5 font-semibold text-gray-900 hover:bg-gray-100 no-underline"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2.5 text-gray-700 hover:bg-gray-100 no-underline"
+                    >
+                      Sign up
+                    </Link>
+                    <div className="my-1 border-t border-gray-200" />
+                    <Link
+                      to="/login"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2.5 text-gray-700 hover:bg-gray-100 no-underline"
+                    >
+                      Airbnb your home
+                    </Link>
+                    <Link
+                      to="/admin/login"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-100 no-underline"
+                    >
+                      <ShieldCheck size={14} className="text-slate-700" />
+                      <span>Admin Portal</span>
+                    </Link>
+                  </>
                 ) : (
-                  <Link
-                    to="/bookings"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-2 text-white no-underline font-medium text-sm hover:bg-red-600 px-3 rounded"
-                  >
-                    My Bookings
-                  </Link>
+                  <>
+                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 mb-1">
+                      <p className="font-semibold text-gray-900 text-xs truncate">{user?.name}</p>
+                      <p className="text-[11px] text-gray-500 truncate">{user?.email}</p>
+                    </div>
+
+                    <Link
+                      to="/bookings"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-100 no-underline"
+                    >
+                      <Calendar size={16} className="text-gray-500" />
+                      <span>My Bookings</span>
+                    </Link>
+
+                    {isHost && (
+                      <Link
+                        to="/host"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 font-medium text-gray-800 hover:bg-gray-100 no-underline"
+                      >
+                        <Home size={16} className="text-gray-500" />
+                        <span>Host Dashboard</span>
+                      </Link>
+                    )}
+
+                    {!isHost && user?.role !== "admin" && (
+                      <Link
+                        to="/become-host"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-gray-800 hover:bg-gray-100 no-underline"
+                      >
+                        <PlusCircle size={16} className="text-gray-500" />
+                        <span>Become a Host</span>
+                      </Link>
+                    )}
+
+                    {user?.role === "admin" && (
+                      <Link
+                        to="/admin/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-slate-800 font-semibold hover:bg-slate-100 no-underline"
+                      >
+                        <ShieldCheck size={16} className="text-slate-700" />
+                        <span>Admin Control Panel</span>
+                      </Link>
+                    )}
+
+                    <div className="my-1 border-t border-gray-200" />
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2.5 text-left px-4 py-2.5 text-red-600 hover:bg-gray-100 font-medium bg-transparent border-none cursor-pointer"
+                    >
+                      <LogOut size={16} />
+                      <span>Log out</span>
+                    </button>
+                  </>
                 )}
-                {isHost && (
-                  <Link
-                    to="/host"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-2 text-white no-underline font-medium text-sm hover:bg-red-600 px-3 rounded"
-                  >
-                    Host Dashboard
-                  </Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left py-2 text-white font-medium text-sm hover:bg-red-600 px-3 rounded bg-transparent border-none cursor-pointer"
-                >
-                  Logout
-                </button>
-              </>
+              </div>
             )}
           </div>
-        )}
+
+        </div>
+
       </div>
-    </nav>
+    </header>
   );
 };
 

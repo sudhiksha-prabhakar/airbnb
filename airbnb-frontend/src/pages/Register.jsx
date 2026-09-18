@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../api";
 import { useAuth } from "../context/AuthContext";
+import Footer from "../components/Footer";
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -13,62 +14,98 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
     try {
       const res = await authAPI.register(formData);
       login(res.data, res.data.token);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[70vh] px-4 py-8">
-      <form onSubmit={handleSubmit} className="p-6 sm:p-8 border border-gray-200 shadow-xl rounded-2xl w-full max-w-md bg-white">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900 text-center">Create Account</h2>
-        {error && <p className="text-red-500 text-sm mb-4 bg-red-50 p-3 rounded-lg text-center">{error}</p>}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              placeholder="Full Name"
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-              required
-            />
+    <div className="min-h-[85vh] flex flex-col justify-between bg-white">
+      <div className="flex-1 flex justify-center items-center px-4 py-12">
+        <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
+          
+          {/* Card Header */}
+          <div className="px-6 py-4 border-b border-gray-200 text-center">
+            <h3 className="text-base font-bold text-gray-900">Finish signing up</h3>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Email Address</label>
-            <input
-              type="email"
-              placeholder="Email"
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Password (min 6 chars)"
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 mt-2 bg-red-500 text-white rounded-xl cursor-pointer font-bold text-base hover:bg-red-600 disabled:opacity-50 transition shadow-sm"
-          >
-            {loading ? "Registering..." : "Register"}
-          </button>
+
+          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <h2 className="text-xl font-bold text-gray-900">Welcome to Airbnb</h2>
+            
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-medium">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Full name</label>
+                <input
+                  type="text"
+                  placeholder="First and last name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  placeholder="At least 6 characters"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full p-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
+                  required
+                />
+              </div>
+            </div>
+
+            <p className="text-[11px] text-gray-500 leading-tight">
+              By selecting <span className="font-bold">Agree and continue</span>, I agree to Airbnb's Terms of Service and Privacy Policy.
+            </p>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-airbnb-gradient text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg disabled:opacity-50 transition cursor-pointer"
+            >
+              {loading ? "Creating account..." : "Agree and continue"}
+            </button>
+
+            <div className="pt-2 text-center text-xs text-gray-600">
+              Already have an account?{" "}
+              <Link to="/login" className="font-bold text-gray-900 underline hover:text-[#FF385C]">
+                Log in
+              </Link>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+
+      <Footer />
     </div>
   );
 };
