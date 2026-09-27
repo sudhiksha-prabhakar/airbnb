@@ -1,5 +1,6 @@
 import React from "react";
 import { Globe, Heart } from "lucide-react";
+import AirbnbLogo from "./AirbnbLogo";
 
 const Footer = () => {
   return (
@@ -71,6 +72,7 @@ const Footer = () => {
       <div className="border-t border-gray-200 py-6 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
           <div className="flex flex-wrap items-center gap-2 text-center md:text-left">
+            <AirbnbLogo className="h-4.5 w-auto text-gray-600 inline-block mr-1" />
             <span>© 2026 Airbnb, Inc.</span>
             <span>·</span>
             <a href="#privacy" className="hover:underline">Privacy</a>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import SearchBar from "./SearchBar";
 import { Globe, Menu, ShieldCheck, LogOut, Home, Calendar, PlusCircle } from "lucide-react";
+import AirbnbLogo from "./AirbnbLogo";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -36,13 +37,8 @@ const Navbar = () => {
         <div className="flex items-center justify-between gap-4">
           
           {/* Left: Airbnb Logo */}
-          <Link to="/" className="flex items-center gap-1.5 no-underline shrink-0">
-            <svg className="h-8 w-8 text-[#FF385C]" viewBox="0 0 32 32" fill="currentColor">
-              <path d="M16 1c2.008 0 3.463.963 4.751 3.269l.533 1.025c1.954 3.83 6.114 12.54 7.1 14.836l.145.353c.667 1.591.91 2.472.96 3.396l.011.315c0 4.008-3.297 7.806-7.5 7.806-3.13 0-5.719-1.996-6.852-4.707l-.148-.372c-.22-.577-.521-1.423-.86-2.42l-.14-.415c-.218.636-.453 1.258-.674 1.835l-.18.461c-1.127 2.766-3.722 4.818-6.896 4.818-4.203 0-7.5-3.798-7.5-7.806 0-.96.22-1.874.887-3.463l.17-.384c.96-2.235 5.12-10.947 7.074-14.777l.559-1.084C12.537 1.963 13.992 1 16 1zm0 2c-1.24 0-2.227.618-3.25 2.45l-.465.903C10.375 10.11 6.275 18.7 5.347 20.87l-.133.303c-.538 1.282-.714 1.967-.747 2.628l-.007.205c0 2.923 2.373 5.806 5.54 5.806 2.378 0 4.385-1.523 5.253-3.665l.135-.357c.414-1.125.867-2.473 1.34-3.957l.272-.852.272.852c.473 1.484.926 2.832 1.34 3.957l.135.357c.868 2.142 2.875 3.665 5.253 3.665 3.167 0 5.54-2.883 5.54-5.806 0-.69-.153-1.4-.73-2.775l-.157-.361c-.928-2.17-5.028-10.76-6.956-14.517l-.487-.946C18.227 3.618 17.24 3 16 3zm0 10c2.761 0 5 2.239 5 5 0 2.21-1.436 4.084-3.418 4.734l-.328.098c-1.343.359-2.765.176-3.967-.512l-.287-.174C11.758 21.364 11 19.78 11 18c0-2.761 2.239-5 5-5zm0 2c-1.657 0-3 1.343-3 3 0 1.077.568 2.023 1.442 2.548l.245.134c.732.366 1.58.46 2.378.261l.241-.07C18.398 20.485 19 19.313 19 18c0-1.657-1.343-3-3-3z"/>
-            </svg>
-            <span className="text-xl font-extrabold tracking-tight text-[#FF385C] hidden sm:inline">
-              airbnb
-            </span>
+          <Link to="/" className="flex items-center no-underline shrink-0 hover:opacity-90 transition-opacity">
+            <AirbnbLogo className="h-8.5 w-auto text-[#FF385C]" />
           </Link>
 
           {/* Center: Top Mode Tabs (All, Homes) */}

@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../api";
 import { useAuth } from "../context/AuthContext";
 import Footer from "../components/Footer";
+import AirbnbLogo from "../components/AirbnbLogo";
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -32,12 +33,19 @@ const Register = () => {
         <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden">
           
           {/* Card Header */}
-          <div className="px-6 py-4 border-b border-gray-200 text-center">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <Link to="/" className="hover:opacity-85 transition">
+              <AirbnbLogo className="h-6 w-auto text-[#FF385C]" iconOnly={true} />
+            </Link>
             <h3 className="text-base font-bold text-gray-900">Finish signing up</h3>
+            <div className="w-6"></div>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            <h2 className="text-xl font-bold text-gray-900">Welcome to Airbnb</h2>
+            <div className="mb-2">
+              <AirbnbLogo className="h-8 w-auto text-[#FF385C] mb-3" />
+              <h2 className="text-xl font-bold text-gray-900">Welcome to Airbnb</h2>
+            </div>
             
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-medium">
