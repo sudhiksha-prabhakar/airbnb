@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 
-const PropertyCard = ({ property, isGuestFavorite = true }) => {
+const PropertyCard = ({ property, isGuestFavorite = true, className = "" }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -37,7 +37,7 @@ const PropertyCard = ({ property, isGuestFavorite = true }) => {
   return (
     <Link 
       to={`/property/${property._id}`} 
-      className="group block no-underline text-inherit cursor-pointer shrink-0 w-64 sm:w-72"
+      className={`group block no-underline text-inherit cursor-pointer ${className || "shrink-0 w-64 sm:w-72"}`}
     >
       <div className="flex flex-col gap-2">
         
@@ -99,12 +99,19 @@ const PropertyCard = ({ property, isGuestFavorite = true }) => {
 
         {/* Info Rows */}
         <div className="flex flex-col gap-0.5 px-0.5">
-          <h3 className="text-sm font-bold text-gray-900 truncate m-0">
-            {property.title}
-          </h3>
+          <div className="flex items-center justify-between gap-1">
+            <h3 className="text-sm font-bold text-gray-900 truncate m-0">
+              {property.title}
+            </h3>
+            <span className="text-xs font-semibold shrink-0">★ {mockRating}</span>
+          </div>
+
+          <p className="text-xs text-gray-500 m-0 truncate">
+            {property.location || "Scenic getaway"}
+          </p>
 
           <p className="text-xs text-gray-600 m-0 font-normal">
-            <span className="font-semibold text-gray-900">₹{twoNightPrice}</span> for 2 nights · <span className="font-semibold">★ {mockRating}</span>
+            <span className="font-semibold text-gray-900">₹{nightlyPrice.toLocaleString("en-IN")}</span> night · <span className="text-gray-500">₹{twoNightPrice} total</span>
           </p>
         </div>
 

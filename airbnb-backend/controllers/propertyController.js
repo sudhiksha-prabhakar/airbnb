@@ -18,42 +18,114 @@ const fixImages = (p) => {
 
 exports.getAllProperties = async (req, res) => {
   try {
-    const { search, minPrice, maxPrice, maxGuests, page = 1 } = req.query;
-    const limit = 8; // Items per page
+    const { search, category, minPrice, maxPrice, maxGuests, page = 1 } = req.query;
+    const limit = parseInt(req.query.limit) || 24; // Items per page
     const skip = (page - 1) * limit;
 
     let filter = {};
 
-    console.log("Query params:", { search, minPrice, maxPrice, maxGuests, page });
+    console.log("Query params:", { search, category, minPrice, maxPrice, maxGuests, page, limit });
 
-    // Search filter (title or location)
+    const conditions = [];
+
+    // Search filter (title, listing_title, name, location, breadcrumbs, description)
     if (search && search.trim()) {
-      filter.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { listing_title: { $regex: search, $options: "i" } },
-        { name: { $regex: search, $options: "i" } },
-        { location: { $regex: search, $options: "i" } },
-        { breadcrumbs: { $regex: search, $options: "i" } }
-      ];
+      const s = search.trim();
+      conditions.push({
+        $or: [
+          { title: { $regex: s, $options: "i" } },
+          { listing_title: { $regex: s, $options: "i" } },
+          { name: { $regex: s, $options: "i" } },
+          { location: { $regex: s, $options: "i" } },
+          { breadcrumbs: { $regex: s, $options: "i" } },
+          { description: { $regex: s, $options: "i" } }
+        ]
+      });
+    }
+
+    // Category filter mapping
+    if (category && category !== "all") {
+      let categoryPattern;
+      switch (category.toLowerCase()) {
+        case "beachfront":
+          categoryPattern = "beach|waterfront|ocean|coast|shore";
+          break;
+        case "pools":
+          categoryPattern = "pool|swim";
+          break;
+        case "tropical":
+          categoryPattern = "tropical|bali|island|palm";
+          break;
+        case "cabins":
+          categoryPattern = "cabin|wood|chalet|nature|treehouse";
+          break;
+        case "mansions":
+          categoryPattern = "mansion|estate|luxury|villa";
+          break;
+        case "trending":
+          categoryPattern = "view|private|oasis|retreat";
+          break;
+        case "countryside":
+          categoryPattern = "country|hill|ranch|farm|valley|creek";
+          break;
+        case "tiny":
+          categoryPattern = "tiny|studio|cottage|compact";
+          break;
+        case "historical":
+          categoryPattern = "historic|castle|heritage|vintage";
+          break;
+        case "camping":
+          categoryPattern = "camp|glamp|tent|yurt";
+          break;
+        case "arctic":
+          categoryPattern = "arctic|snow|ski|winter";
+          break;
+        case "luxe":
+          categoryPattern = "luxe|luxury|penthouse|resort";
+          break;
+        case "design":
+          categoryPattern = "design|architect|modern|loft";
+          break;
+        default:
+          categoryPattern = category;
+      }
+
+      conditions.push({
+        $or: [
+          { title: { $regex: categoryPattern, $options: "i" } },
+          { listing_title: { $regex: categoryPattern, $options: "i" } },
+          { name: { $regex: categoryPattern, $options: "i" } },
+          { location: { $regex: categoryPattern, $options: "i" } },
+          { breadcrumbs: { $regex: categoryPattern, $options: "i" } },
+          { description: { $regex: categoryPattern, $options: "i" } }
+        ]
+      });
     }
 
     // Price filter
     if (minPrice || maxPrice) {
-      filter.price = {};
+      const priceCondition = {};
       if (minPrice && !isNaN(minPrice)) {
-        filter.price.$gte = Number(minPrice);
+        priceCondition.$gte = Number(minPrice);
       }
       if (maxPrice && !isNaN(maxPrice)) {
-        filter.price.$lte = Number(maxPrice);
+        priceCondition.$lte = Number(maxPrice);
       }
+      conditions.push({ price: priceCondition });
     }
 
     // Guest filter
     if (maxGuests && !isNaN(maxGuests)) {
-      filter.maxGuests = { $gte: Number(maxGuests) };
+      conditions.push({ maxGuests: { $gte: Number(maxGuests) } });
     }
 
-    console.log("Filter object:", filter);
+    if (conditions.length === 1) {
+      filter = conditions[0];
+    } else if (conditions.length > 1) {
+      filter = { $and: conditions };
+    }
+
+    console.log("Filter object:", JSON.stringify(filter));
 
     // Get total count for pagination
     const totalCount = await Property.countDocuments(filter);

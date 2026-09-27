@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import SearchBar from "./SearchBar";
 import { Globe, Menu, ShieldCheck, LogOut, Home, Calendar, PlusCircle } from "lucide-react";
@@ -7,6 +7,8 @@ import AirbnbLogo from "./AirbnbLogo";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
   const { isAuthenticated, logout, isHost, user } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
@@ -30,8 +32,8 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 pt-4 pb-6 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+    <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 pt-4 ${isHomePage ? "pb-6" : "pb-4"} shadow-xs`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isHomePage ? "space-y-4" : ""}`}>
         
         {/* Top Header Row: Logo | Mode Navigation Tabs | Right Controls */}
         <div className="flex items-center justify-between gap-4">
@@ -42,7 +44,8 @@ const Navbar = () => {
           </Link>
 
           {/* Center: Top Mode Tabs (All, Homes) */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700">
+          {isHomePage && (
+            <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700">
             
             {/* All */}
             <button
@@ -71,6 +74,7 @@ const Navbar = () => {
             </button>
 
           </div>
+          )}
 
           {/* Right Menu Controls */}
           <div className="flex items-center gap-2">
@@ -205,11 +209,13 @@ const Navbar = () => {
         </div>
 
         {/* Bottom Centered Floating Search Bar Box */}
-        <div className="flex justify-center pt-2">
-          <div className="w-full max-w-3xl">
-            <SearchBar />
+        {isHomePage && (
+          <div className="flex justify-center pt-2">
+            <div className="w-full max-w-3xl">
+              <SearchBar />
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </header>

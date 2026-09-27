@@ -61,8 +61,9 @@ const PropertyDetails = () => {
   };
 
   const nights = calculateNights();
+  const guestCount = Math.max(1, Number(guests) || 1);
   const nightlyPrice = property?.price || 3500;
-  const basePrice = nightlyPrice * (nights || 1);
+  const basePrice = nightlyPrice * (nights || 1) * guestCount;
   const cleaningFee = 1200;
   const serviceFee = Math.round(basePrice * 0.12);
   const totalPrice = basePrice + cleaningFee + serviceFee;
@@ -103,7 +104,8 @@ const PropertyDetails = () => {
         property: id,
         fromDate,
         toDate,
-        guests,
+        guests: guestCount,
+        totalPrice,
       });
       setBookingSuccess(true);
       setTimeout(() => {
@@ -142,17 +144,26 @@ const PropertyDetails = () => {
   }
 
   // Normalize image gallery
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
+    "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
+  ];
+
   const rawImages = property.images && property.images.length > 0 
     ? property.images 
-    : [
-        property.image || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80"
-      ];
-  
-  const images = rawImages.map(img => typeof img === 'string' ? img.replace(/"/g, '') : img);
+    : [property.image || fallbackImages[0]];
+
+  const parsedImages = rawImages
+    .map(img => typeof img === 'string' ? img.replace(/"/g, '') : img)
+    .filter(Boolean);
+
+  const images = [...parsedImages];
+  while (images.length < 5) {
+    images.push(fallbackImages[images.length % fallbackImages.length]);
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -401,7 +412,10 @@ const PropertyDetails = () => {
               {/* Price Calculation Breakdown */}
               <div className="pt-4 border-t border-gray-200 space-y-2.5 text-xs text-gray-700">
                 <div className="flex justify-between">
-                  <span className="underline">₹{nightlyPrice.toLocaleString("en-IN")} x {nights || 1} nights</span>
+                  <span className="underline">
+                    ₹{nightlyPrice.toLocaleString("en-IN")} x {nights || 1} {nights === 1 ? "night" : "nights"}
+                    {guestCount > 1 ? ` x ${guestCount} guests` : ""}
+                  </span>
                   <span>₹{basePrice.toLocaleString("en-IN")}</span>
                 </div>
 

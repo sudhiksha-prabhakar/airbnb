@@ -90,7 +90,7 @@ const HostDashboard = () => {
                 <label className="block text-xs font-bold text-gray-700 mb-1">Location</label>
                 <input
                   type="text"
-                  placeholder="e.g. Goa, India"
+                  placeholder="e.g. Canggu, Bali or Austin, Texas"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   className="w-full p-3.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"

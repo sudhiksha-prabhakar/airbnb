@@ -42,14 +42,22 @@ exports.createBooking = async (req, res) => {
     }
 
     // Calculate days
-    const days =
-      (new Date(toDate) - new Date(fromDate)) / (1000 * 60 * 60 * 24);
+    const days = Math.ceil(
+      (new Date(toDate) - new Date(fromDate)) / (1000 * 60 * 60 * 24)
+    );
 
     if (days <= 0) {
       return res.status(400).json({ message: "Invalid booking dates" });
     }
 
-    const totalPrice = days * propertyData.price;
+    // Calculate price based on days, property price, and guest count
+    const guestMultiplier = guestCount > 0 ? guestCount : 1;
+    const basePrice = days * propertyData.price * guestMultiplier;
+    const cleaningFee = 1200;
+    const serviceFee = Math.round(basePrice * 0.12);
+    const calculatedPrice = basePrice + cleaningFee + serviceFee;
+
+    const totalPrice = req.body.totalPrice ? Number(req.body.totalPrice) : calculatedPrice;
 
     const booking = await Booking.create({
       user: req.user.id,

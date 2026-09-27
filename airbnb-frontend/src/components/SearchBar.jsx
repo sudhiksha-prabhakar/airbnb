@@ -115,11 +115,29 @@ const SearchBar = () => {
                 <label className="block text-sm font-bold text-gray-900 mb-2">Where</label>
                 <input
                   type="text"
-                  placeholder="Search destinations (e.g. North Goa, Baga, Puducherry)"
+                  placeholder="Search destinations (e.g. Bali, Austin, Canggu, Lago Vista)"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full p-3.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF385C]"
                 />
+                {/* Popular destinations in database */}
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  <span className="text-[11px] font-semibold text-gray-500 self-center">Popular:</span>
+                  {["Bali", "Austin", "Canggu", "Lago Vista", "Marble Falls"].map((dest) => (
+                    <button
+                      key={dest}
+                      type="button"
+                      onClick={() => setSearch(dest)}
+                      className={`text-xs px-2.5 py-1 rounded-full border transition cursor-pointer ${
+                        search === dest 
+                          ? "bg-black text-white border-black" 
+                          : "bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-400"
+                      }`}
+                    >
+                      {dest}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div>

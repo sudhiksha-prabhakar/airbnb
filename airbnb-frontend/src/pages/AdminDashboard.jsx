@@ -183,7 +183,9 @@ const AdminDashboard = () => {
                     <td className="p-4 font-semibold text-slate-800">{p.title}</td>
                     <td className="p-4 text-gray-600">📍 {p.location}</td>
                     <td className="p-4 font-bold text-red-500">₹{p.price}</td>
-                    <td className="p-4 text-gray-600">{p.host?.name || "System Admin"} ({p.host?.email || "admin@example.com"})</td>
+                    <td className="p-4 text-gray-600">
+                      {p.host?.name || "System Admin"} {p.host?.email ? `(${p.host.email})` : ""}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -210,7 +212,9 @@ const AdminDashboard = () => {
                 {bookings.map((b) => (
                   <tr key={b._id} className="hover:bg-slate-50/50">
                     <td className="p-4 font-semibold text-slate-800">{b.property?.title || "Property"}</td>
-                    <td className="p-4 text-gray-600">{b.user?.name || "Guest"} ({b.user?.email})</td>
+                    <td className="p-4 text-gray-600">
+                      {b.user?.name || "Guest"} {b.user?.email ? `(${b.user.email})` : ""}
+                    </td>
                     <td className="p-4 text-xs text-gray-500">
                       {new Date(b.fromDate).toLocaleDateString()} – {new Date(b.toDate).toLocaleDateString()}
                     </td>
