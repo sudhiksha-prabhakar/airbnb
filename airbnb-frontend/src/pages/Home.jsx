@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { propertyAPI } from "../api";
 import PropertyCard from "../components/PropertyCard";
-import CategoryBar from "../components/CategoryBar";
 import Footer from "../components/Footer";
 import { 
   ChevronLeft, 
@@ -11,19 +10,8 @@ import {
   ArrowRight, 
   MapPin, 
   Sparkles, 
-  Compass, 
   RotateCcw 
 } from "lucide-react";
-
-const POPULAR_DESTINATIONS = [
-  { id: "all", label: "All Destinations", search: "" },
-  { id: "bali", label: "🌴 Bali, Indonesia", search: "Bali" },
-  { id: "austin", label: "⛵ Austin & Lake Travis", search: "Austin" },
-  { id: "canggu", label: "🏄 Canggu, Bali", search: "Canggu" },
-  { id: "lagovista", label: "🌊 Lago Vista, TX", search: "Lago Vista" },
-  { id: "marblefalls", label: "⛰️ Marble Falls, TX", search: "Marble Falls" },
-  { id: "villas", label: "✨ Luxury Villas", search: "Villa" },
-];
 
 const Home = () => {
   const [searchParams] = useSearchParams();
@@ -31,7 +19,6 @@ const Home = () => {
 
   // Search & filter state from URL
   const search = searchParams.get("search") || "";
-  const category = searchParams.get("category") || "all";
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
   const maxGuests = searchParams.get("maxGuests") || "";
@@ -55,7 +42,6 @@ const Home = () => {
 
   const isSearchActive = Boolean(
     search || 
-    (category && category !== "all") || 
     minPrice || 
     maxPrice || 
     maxGuests
@@ -93,14 +79,9 @@ const Home = () => {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        // Combine category keyword with search for maximum backend compatibility
-        const effectiveSearch = category && category !== "all" 
-          ? (search ? `${search} ${category}` : category) 
-          : search;
 
         const res = await propertyAPI.getAllProperties({
-          search: effectiveSearch,
-          category: category !== "all" ? category : undefined,
+          search,
           minPrice,
           maxPrice,
           maxGuests,
@@ -126,35 +107,13 @@ const Home = () => {
     };
 
     fetchProperties();
-  }, [search, category, minPrice, maxPrice, maxGuests, page]);
+  }, [search, minPrice, maxPrice, maxGuests, page]);
 
   const scrollContainer = (ref, direction) => {
     if (ref.current) {
       const scrollAmount = direction === "left" ? -340 : 340;
       ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     }
-  };
-
-  const handleSelectCategory = (catId) => {
-    const params = new URLSearchParams(searchParams);
-    if (catId === "all") {
-      params.delete("category");
-    } else {
-      params.set("category", catId);
-    }
-    params.set("page", "1");
-    navigate(`/?${params.toString()}`);
-  };
-
-  const handleSelectDestination = (destSearch) => {
-    const params = new URLSearchParams(searchParams);
-    if (!destSearch) {
-      params.delete("search");
-    } else {
-      params.set("search", destSearch);
-    }
-    params.set("page", "1");
-    navigate(`/?${params.toString()}`);
   };
 
   const handlePageChange = (newPage) => {
@@ -171,42 +130,6 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white relative">
       
-      {/* Category Bar Navigation */}
-      <CategoryBar
-        selectedCategory={category}
-        onSelectCategory={handleSelectCategory}
-        onOpenFilters={() => {}}
-      />
-
-      {/* Destination Quick-Pills Filter Bar */}
-      <div className="bg-gray-50 border-b border-gray-200 py-2.5 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
-          <span className="text-xs font-bold text-gray-500 flex items-center gap-1 shrink-0 mr-1">
-            <Compass size={14} className="text-[#FF385C]" />
-            <span>Destinations:</span>
-          </span>
-          {POPULAR_DESTINATIONS.map((dest) => {
-            const isSelected = 
-              (dest.id === "all" && !search) || 
-              (dest.search && search.toLowerCase().includes(dest.search.toLowerCase()));
-
-            return (
-              <button
-                key={dest.id}
-                onClick={() => handleSelectDestination(dest.search)}
-                className={`text-xs px-3 py-1.5 rounded-full transition whitespace-nowrap cursor-pointer font-medium ${
-                  isSelected
-                    ? "bg-black text-white shadow-xs"
-                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:text-black"
-                }`}
-              >
-                {dest.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-12">
         
@@ -235,18 +158,14 @@ const Home = () => {
             </button>
           </div>
         ) : isSearchActive ? (
-          /* Filtered Search / Category Results Grid View */
+          /* Filtered Search Results Grid View */
           <div className="space-y-8">
             <div className="flex items-center justify-between pb-4 border-b border-gray-200">
               <div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 flex items-center gap-2">
                   <MapPin size={22} className="text-[#FF385C]" />
                   <span>
-                    {search 
-                      ? `Stays in "${search}"` 
-                      : category && category !== "all" 
-                        ? `${category.charAt(0).toUpperCase() + category.slice(1)} stays`
-                        : "Matching stays"}
+                    {search ? `Stays in "${search}"` : "Matching stays"}
                   </span>
                 </h2>
                 <p className="text-xs text-gray-500 mt-1">
@@ -351,7 +270,7 @@ const Home = () => {
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
                   <button 
-                    onClick={() => handleSelectDestination("Bali")}
+                    onClick={() => navigate("/?search=Bali")}
                     className="flex items-center gap-2 text-xl sm:text-2xl font-extrabold text-gray-900 group border-none bg-transparent cursor-pointer p-0 text-left"
                   >
                     <span>Popular villas in Bali, Indonesia</span>
@@ -396,7 +315,7 @@ const Home = () => {
               <section className="space-y-4 pt-4">
                 <div className="flex items-center justify-between">
                   <button 
-                    onClick={() => handleSelectDestination("Texas")}
+                    onClick={() => navigate("/?search=Texas")}
                     className="flex items-center gap-2 text-xl sm:text-2xl font-extrabold text-gray-900 group border-none bg-transparent cursor-pointer p-0 text-left"
                   >
                     <span>Lakefront & hill country stays in Texas</span>
@@ -441,7 +360,7 @@ const Home = () => {
               <section className="space-y-4 pt-4">
                 <div className="flex items-center justify-between">
                   <button 
-                    onClick={() => handleSelectDestination("Villa")}
+                    onClick={() => navigate("/?search=Villa")}
                     className="flex items-center gap-2 text-xl sm:text-2xl font-extrabold text-gray-900 group border-none bg-transparent cursor-pointer p-0 text-left"
                   >
                     <span className="flex items-center gap-2">
