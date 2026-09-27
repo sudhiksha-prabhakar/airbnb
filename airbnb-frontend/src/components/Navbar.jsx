@@ -38,7 +38,7 @@ const Navbar = () => {
           
           {/* Left: Airbnb Logo */}
           <Link to="/" className="flex items-center no-underline shrink-0 hover:opacity-90 transition-opacity">
-            <AirbnbLogo className="h-8.5 w-auto text-[#FF385C]" />
+            <AirbnbLogo className="text-[#FF385C]" style={{ height: "36px", width: "auto" }} />
           </Link>
 
           {/* Center: Top Mode Tabs (All, Homes) */}
