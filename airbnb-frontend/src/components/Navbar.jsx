@@ -31,6 +31,18 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const handleLogoClick = (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    if (window.location.pathname === "/" && !window.location.search && !window.location.hash) {
+      window.location.reload();
+    } else {
+      window.location.href = "/";
+    }
+  };
+
   return (
     <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 pt-4 ${isHomePage ? "pb-6" : "pb-4"} shadow-xs`}>
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isHomePage ? "space-y-4" : ""}`}>
@@ -39,9 +51,14 @@ const Navbar = () => {
         <div className="flex items-center justify-between gap-4">
           
           {/* Left: Airbnb Logo */}
-          <Link to="/" className="flex items-center no-underline shrink-0 hover:opacity-90 transition-opacity">
+          <a
+            href="/"
+            onClick={handleLogoClick}
+            className="flex items-center no-underline shrink-0 hover:opacity-90 transition-opacity cursor-pointer"
+            aria-label="Airbnb home"
+          >
             <AirbnbLogo className="text-[#FF385C]" style={{ height: "36px", width: "auto" }} />
-          </Link>
+          </a>
 
           {/* Center: Top Mode Tabs (All, Homes) */}
           {isHomePage && (

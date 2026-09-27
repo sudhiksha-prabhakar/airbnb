@@ -72,7 +72,22 @@ const Footer = () => {
       <div className="border-t border-gray-200 py-6 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-600">
           <div className="flex flex-wrap items-center gap-2 text-center md:text-left">
-            <AirbnbLogo className="h-4.5 w-auto text-gray-600 inline-block mr-1" />
+            <a
+              href="/"
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                if (window.location.pathname === "/" && !window.location.search && !window.location.hash) {
+                  window.location.reload();
+                } else {
+                  window.location.href = "/";
+                }
+              }}
+              className="hover:opacity-80 transition inline-flex items-center cursor-pointer"
+              aria-label="Airbnb home"
+            >
+              <AirbnbLogo className="h-4.5 w-auto text-gray-600 inline-block mr-1" />
+            </a>
             <span>© 2026 Airbnb, Inc.</span>
             <span>·</span>
             <a href="#privacy" className="hover:underline">Privacy</a>

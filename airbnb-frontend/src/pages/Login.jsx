@@ -35,9 +35,18 @@ const Login = () => {
           
           {/* Card Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <Link to="/" className="hover:opacity-85 transition">
+            <a
+              href="/"
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                window.location.href = "/";
+              }}
+              className="hover:opacity-85 transition cursor-pointer"
+              aria-label="Airbnb home"
+            >
               <AirbnbLogo className="h-6 w-auto text-[#FF385C]" iconOnly={true} />
-            </Link>
+            </a>
             <h3 className="text-base font-bold text-gray-900">Log in or sign up</h3>
             <div className="w-6"></div>
           </div>
